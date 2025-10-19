@@ -1,6 +1,12 @@
-# Hide Facebook Home page Toggle Firefox Extension
+# Hide Facebook Home page Toggle Chromium Extension
 
-A simple Firefox extension with a toggle button that hides facebook homepage to avoid distraction when using messages or notifications
+A simple chromium extension with a toggle button that hides facebook homepage to avoid distraction when using messages or notifications
+
+
+# Installation
+
+https://addons.mozilla.org/el/firefox/addon/hide-fb-home-page-toggle/
+
 
 ## License
 

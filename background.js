@@ -16,35 +16,48 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+function isFacebookHome(url) {
+  try {
+    const u = new URL(url);
+    return (
+      u.hostname === "www.facebook.com" &&
+      (u.pathname === "/" || u.pathname === "")
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
 // when pressing the button
-browser.browserAction.onClicked.addListener((tab) => {
-  if (!tab.url.includes("facebook.com")) {
-    return;
-  } // doing that just to make button work only when you are on facebook tab
+chrome.action.onClicked.addListener((tab) => {
+  chrome.storage.local.get(["feedBlockerEnabled"], (result) => {
+    let enabled = !result.feedBlockerEnabled;
+    chrome.storage.local.set({ feedBlockerEnabled: enabled });
 
-  browser.storage.local.get('feedBlockerEnabled').then((result) => {
-    let enabled = result.feedBlockerEnabled || false;
-
-    enabled = !enabled;
-    browser.storage.local.set({ feedBlockerEnabled: enabled });
-
-    browser.tabs.executeScript(tab.id, { file: "remove_feed.js" }).then(() => {
-      browser.tabs.sendMessage(tab.id, { action: enabled ? "enable" : "disable" });
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["content.js"]
+    }, () => {
+      chrome.tabs.sendMessage(tab.id, {
+        action: enabled ? "enable" : "disable"
+      });
     });
   });
 });
 
 // when refreshing tab
-browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   if (
-    changeInfo.status === "complete" &&
-    tab.url &&
-    tab.url.includes("facebook.com")
+    info.status === "complete" &&
+    isFacebookHome(tab.url)
   ) {
-    browser.storage.local.get('feedBlockerEnabled').then((result) => {
+    chrome.storage.local.get(["feedBlockerEnabled"], (result) => {
       if (result.feedBlockerEnabled) {
-        browser.tabs.executeScript(tabId, { file: "remove_feed.js" }).then(() => {
-          browser.tabs.sendMessage(tabId, { action: "enable" });
+        chrome.scripting.executeScript({
+          target: { tabId },
+          files: ["content.js"]
+        }, () => {
+          chrome.tabs.sendMessage(tabId, { action: "enable" });
         });
       }
     });
