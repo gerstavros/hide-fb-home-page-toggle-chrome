@@ -5,7 +5,7 @@ A simple chromium extension with a toggle button that hides facebook homepage to
 
 # Installation
 
-https://addons.mozilla.org/el/firefox/addon/hide-fb-home-page-toggle/
+https://chromewebstore.google.com/detail/hide-fb-home-feed/jacoacjjeelfaeaddedkoeccmahbglig
 
 
 ## License
